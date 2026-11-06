@@ -1,0 +1,26 @@
+name: HiSim prefix dataset regression
+
+on:
+  push:
+    branches: ['ci/hisim-prefix-dataset-20261106']
+
+permissions:
+  contents: read
+
+jobs:
+  dataset:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.12']
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install pytest 'transformers>=4.50,<5'
+      - name: Test prefix dataset access
+        env:
+          PYTHONPATH: hisim/src
+        run: python -m pytest hisim/test/test_prefix_cache.py -q
